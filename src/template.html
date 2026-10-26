@@ -81,6 +81,15 @@
     position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.05;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.55'/></svg>");
   }
+  /* صانع النظام: أسفل الشاشة في المنتصف، في فراغ الحاشية السفلية، لا يعيق شيئاً */
+  #maker{
+    position:fixed;left:50%;bottom:max(1.3vh,6px);transform:translateX(-50%);z-index:6;
+    pointer-events:none;white-space:nowrap;
+    font-size:clamp(11px,.9vw,17px);font-weight:400;letter-spacing:.04em;
+    color:var(--dim);opacity:.8;text-shadow:0 1px 6px rgba(0,0,0,.7);
+  }
+  #maker b{font-weight:500;color:var(--gold-2)}
+  html.widget #maker{display:none}
   .top-veil{
     position:fixed;left:0;top:0;width:56vw;height:34vh;z-index:3;pointer-events:none;
     background:radial-gradient(120% 100% at 0% 0%,rgba(2,9,6,.82) 0%,rgba(2,9,6,.42) 45%,rgba(2,9,6,0) 76%);
@@ -511,6 +520,7 @@
 <div class="grain"></div>
 <div class="top-veil"></div>
 <div class="bottom-veil"></div>
+<div id="maker">صانع النظام: <b>عمر الحربي</b></div>
 <div class="dimmer" id="dimmer"></div>
 <div class="adbar" id="adbar" hidden></div>
 

@@ -17,7 +17,7 @@ import java.util.Comparator;
  * opens at once. Fonts and bundled photos come from the APK; hosted photos are downloaded once and kept.
  */
 final class PhotoCache {
-    static final String REPO = "https://raw.githubusercontent.com/tshi-dev/UrTV/" + BuildConfig.BRANCH + "/";
+    static final String REPO = "https://raw.githubusercontent.com/omaralhrby707-del/UrTV/" + BuildConfig.BRANCH + "/";
     private static final String BUNDLED = REPO + "assets/backgrounds/", HOSTED = REPO + "photos/",
         FONTS = REPO + "assets/fonts/";
     /** the owner's own photos (Own): not a real address, the page asks for N.jpg here and only this app answers */

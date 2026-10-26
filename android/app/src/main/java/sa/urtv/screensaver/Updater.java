@@ -21,7 +21,7 @@ final class Updater {
 
     private static final String OFF = "التحديث التلقائي متوقف";
     private static final String RECENT = "تم الفحص مؤخراً";
-    private static final String LATEST_URL = "https://github.com/tshi-dev/UrTV/releases/latest";
+    private static final String LATEST_URL = "https://github.com/omaralhrby707-del/UrTV/releases/latest";
     private static final Pattern TAG = Pattern.compile("v(\\d+\\.\\d+)$");
 
     private Updater() {}
