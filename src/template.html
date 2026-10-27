@@ -71,11 +71,11 @@
       linear-gradient(180deg,rgba(3,10,7,.62) 0%,rgba(3,10,7,.30) 22%,rgba(3,10,7,.12) 46%,rgba(3,10,7,.42) 74%,rgba(2,6,4,.88) 100%),
       radial-gradient(120% 85% at 22% 34%,rgba(3,14,9,.42) 0%,rgba(3,14,9,0) 58%);
   }
-  /* photo credits live in PHOTO-CREDITS.md on GitHub, not on screen */
-  #credit{display:none;
-    position:fixed;left:26px;bottom:6px;z-index:4;
+  /* A quiet attribution that remains clear of the clock and bottom panels. */
+  #credit{display:block;
+    position:fixed;left:26px;bottom:10px;z-index:4;
     font-size:10px;letter-spacing:.02em;
-    color:rgba(246,239,224,.30);pointer-events:none;
+    color:rgba(246,239,224,.38);pointer-events:none;
   }
   .grain{
     position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.05;
@@ -531,7 +531,7 @@
 </head>
 <body>
 <div class="photo"></div>
-<div id="credit"></div>
+<div id="credit">by: Omar alharbi</div>
 <div class="veil"></div>
 <div class="grain"></div>
 <div class="top-veil"></div>
@@ -2920,8 +2920,6 @@ function showBackground(url, b){
   ph.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
-  const cr = document.getElementById('credit');
-  if(cr) cr.textContent = b.c ? 'الصورة: ' + b.c : '';
   const fam = document.getElementById('fam');
   if(fam) fam.classList.toggle('on', !!b.fam);
 }

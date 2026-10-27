@@ -255,6 +255,13 @@ public class MainActivity extends Activity {
         gridShade.setBackgroundColor(0xB3000000);
         gridShade.setAlpha(0f);
         root.addView(gridShade, new FrameLayout.LayoutParams(-1, -1));
+
+        // Keep the author's credit deliberately small and outside every focusable control.
+        TextView attribution = text(11, "sans-serif", 0x73FFFFFF);
+        attribution.setText("by: Omar alharbi");
+        attribution.setSingleLine(true);
+        root.addView(attribution, lp(-2, -2, Gravity.LEFT | Gravity.BOTTOM,
+                dp(24), 0, 0, dp(12)));
         try {
             wallpapers = getAssets().list("wallpapers");
         } catch (java.io.IOException ignored) { }
