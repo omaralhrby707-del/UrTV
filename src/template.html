@@ -90,6 +90,22 @@
   }
   #maker b{font-weight:500;color:var(--gold-2)}
   html.widget #maker{display:none}
+  /* «صور العائلة»: فوق الصورة أسفل اليمين، وتظهر فقط مع صورك أنت */
+  #fam{position:fixed;right:2.2vw;bottom:max(1.3vh,6px);z-index:6;pointer-events:none;white-space:nowrap;
+    font-size:clamp(12px,1vw,19px);font-weight:500;letter-spacing:.04em;color:var(--gold-hi);
+    text-shadow:0 1px 6px rgba(0,0,0,.7);opacity:0;transition:opacity .6s ease}
+  #fam.on{opacity:.9}
+  html.widget #fam{display:none}
+
+  /* ذكر وآية صغيرة: أعلى الوسط، تتغير كل ١٠ ثوانٍ، بنفس شكل بطاقة الآية والحديث */
+  .stage > .week.dua{position:absolute;top:calc(3.1vh + 4px);left:50%;transform:translateX(-50%);
+    width:min(34vw,560px);max-width:none;padding:1.1vh 1.4vw;z-index:6;text-align:center}
+  .week.dua .hd{margin-bottom:.6vh}
+  .week.dua li.src{justify-content:center}
+  .np:not([hidden]) ~ .dua{display:none}   /* إذا ظهرت بطاقة «يُتلى الآن» تختفي */
+  html.widget .week.dua{display:none}
+  html.cs-dark3 .stage > .week.dua,html.cs-glass3 .stage > .week.dua{padding:calc(1.1vh + 8px) calc(1.4vw + 8px)}
+  @media (max-aspect-ratio:5/4){.stage > .week.dua{display:none}}
   .top-veil{
     position:fixed;left:0;top:0;width:56vw;height:34vh;z-index:3;pointer-events:none;
     background:radial-gradient(120% 100% at 0% 0%,rgba(2,9,6,.82) 0%,rgba(2,9,6,.42) 45%,rgba(2,9,6,0) 76%);
@@ -520,8 +536,8 @@
 <div class="grain"></div>
 <div class="top-veil"></div>
 <div class="bottom-veil"></div>
-<div id="maker">صانع النظام: <b>عمر الحربي</b></div>
-<div class="dimmer" id="dimmer"></div>
+<div id="maker" dir="ltr">by : <b>Omar Alharbi</b></div>
+<div id="fam">صور العائلة</div><div class="dimmer" id="dimmer"></div>
 <div class="adbar" id="adbar" hidden></div>
 
 <main class="stage">
@@ -588,7 +604,11 @@
     <span class="frm"></span><span class="dia t"></span><span class="dia b"></span>
     <div class="npl" id="np-l"><span class="npe"><i></i><i></i><i></i></span><span class="npk">يُتلى الآن</span><span class="nps">·</span><b id="np-t"></b><span class="nps" id="np-s">·</span><span class="npw" id="np-w"></span></div>
   </div>
-
+  <div class="week dua" id="dua">
+    <span class="frm"></span><span class="dia t"></span><span class="dia b"></span>
+    <div class="hd" id="dua-hd">ذكر</div>
+    <ul id="dua-l"></ul>
+  </div>
 </main>
 
 <script>
@@ -2865,7 +2885,7 @@ let REMOTE_BGS = (()=>{ try{ return JSON.parse(localStorage.getItem('photoIndex'
 // The owner's own photos: the app answers OWN_BASE N.jpg (1..CONFIG.own) from its own folder, never from the network.
 const OWN_BASE = 'https://own.urtv.invalid/';
 const OWN_ONLY = () => CONFIG.own > 0 && CONFIG.ownMode === 'only';
-const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BASE + (k + 1) + '.jpg', b: {}}));   // no credit: they are not ours
+const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BASE + (k + 1) + '.jpg', b: {fam: 1}}));   // no credit: they are not ours
 
 async function loadPhotoIndex(){
   if(OWN_ONLY()) return;   // nothing of ours is shown, so nothing is fetched
@@ -2902,6 +2922,8 @@ function showBackground(url, b){
   cardBlurLater(url);
   const cr = document.getElementById('credit');
   if(cr) cr.textContent = b.c ? 'الصورة: ' + b.c : '';
+  const fam = document.getElementById('fam');
+  if(fam) fam.classList.toggle('on', !!b.fam);
 }
 
 // ---- card style blur: a copy of the photo behind the card, blurred once per photo, never a live backdrop-filter ----
@@ -3138,7 +3160,35 @@ function nowPlayingTick(){
   const line = document.getElementById('np-l');
   FIT_STEPS.concat([.64, .56]).find(k => { line.style.fontSize = k === 1 ? '' : k + 'em'; return card.getBoundingClientRect().width <= innerWidth * .42; });
 }
-
+// ذكر وآية صغيرة تتغير كل ١٠ ثوانٍ (الشاشة فقط). [العنوان، قرآن؟، النص، المصدر]
+const DUAS = [
+  ['آية', 1, 'إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا', 'الشرح · 6'],
+  ['دعاء', 1, 'لَّآ إِلَٰهَ إِلَّآ أَنتَ سُبْحَٰنَكَ إِنِّى كُنتُ مِنَ ٱلظَّٰلِمِينَ', 'الأنبياء · 87'],
+  ['آية', 1, 'أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ', 'الرعد · 28'],
+  ['آية', 1, 'فَٱذْكُرُونِىٓ أَذْكُرْكُمْ', 'البقرة · 152'],
+  ['دعاء', 1, 'رَبِّ ٱشْرَحْ لِى صَدْرِى', 'طه · 25'],
+  ['دعاء', 1, 'وَقُل رَّبِّ زِدْنِى عِلْمًا', 'طه · 114'],
+  ['آية', 1, 'إِنَّ ٱللَّهَ مَعَ ٱلصَّٰبِرِينَ', 'البقرة · 153'],
+  ['دعاء', 1, 'حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ', 'آل عمران · 173'],
+  ['ذكر', 0, 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', 'متفق عليه'],
+  ['ذكر', 0, 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ', 'متفق عليه'],
+  ['دعاء', 0, 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ', 'رواه الترمذي'],
+  ['دعاء', 0, 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ', 'رواه أبو داود'],
+  ['دعاء', 0, 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ', 'رواه أبو داود وابن ماجه'],
+];
+let DUA_I = 0;
+function duaTick(first){
+  const box = document.getElementById('dua');
+  if(!box || CONFIG.widget) return;
+  if(!first) DUA_I++;
+  const [title, quran, text, src] = DUAS[DUA_I % DUAS.length];
+  const ul = document.getElementById('dua-l');
+  setText(document.getElementById('dua-hd'), title);
+  setHTML(ul, `<li class="quote${quran ? ' quran' : ''} q3">`
+    + (quran ? `<span class="orn">﴿</span><span class="qt">${esc(text)}</span><span class="orn">﴾</span>` : esc(text))
+    + `</li><li class="src">${esc(ar(src))}</li>`, true);
+  ul.classList.remove('flip'); void ul.offsetWidth; ul.classList.add('flip');
+}
 function boot(){
   pruneStorage();
   if(CONFIG.widget){ bootWidget(); return; }
@@ -3174,6 +3224,9 @@ function boot(){
   applyNight(); pixelShift();
 
   nowPlayingTick();
+  DUA_I = riyadhDayNumber() % DUAS.length;
+  duaTick(true);
+  setInterval(duaTick, 10000);
   setInterval(nowPlayingTick, 60*1000);
   setInterval(tickClock, 1000);
   setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); if(!SLOT_MATCHES) renderSlot(); }, 15000);
